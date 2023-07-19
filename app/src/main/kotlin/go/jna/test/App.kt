@@ -6,8 +6,8 @@ package go.jna.test
 import com.sun.jna.Native
 import com.sun.jna.NativeLibrary
 import com.sun.jna.Pointer
+import com.sun.jna.PointerType
 import com.sun.jna.Structure
-import java.awt.Point
 
 
 @Structure.FieldOrder("p", "n")
@@ -44,10 +44,27 @@ class App {
         }
 }
 
+class Ident: PointerType() {
+    val name: String
+        get() {
+            val tmp = GetIdentName(this)
+            return tmp.p
+        }
+}
+
+class FuncDecl : PointerType() {
+
+    val name: Ident
+        get() {
+        return GetFuncDeclName(this)
+    }
+
+}
+
 external fun Hello(msg: GoString.ByValue): Pointer
-external fun GetFuncDecl(): Pointer
-external fun GetFuncDeclName(ptr: Pointer): Pointer
-external fun GetIdentName(ptr: Pointer): GoString.ByValue
+external fun GetFuncDecl(): FuncDecl
+external fun GetFuncDeclName(ptr: FuncDecl): Ident
+external fun GetIdentName(ptr: Ident): GoString.ByValue
 
 fun main() {
     Native.register(NativeLibrary.getInstance("awesome"))
@@ -65,6 +82,9 @@ fun main() {
     }
 
     val decl = GetFuncDecl()
-    val id = GetFuncDeclName(decl)
+    var id = GetFuncDeclName(decl)
     println(GetIdentName(id).p)
+
+    id = decl.name
+    println(id.name)
 }

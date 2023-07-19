@@ -7,7 +7,9 @@ import (
 
 	pointer "github.com/mattn/go-pointer"
 )
-import "go/ast"
+import (
+	"go/ast"
+)
 
 type Simple struct {
 	a C.int
